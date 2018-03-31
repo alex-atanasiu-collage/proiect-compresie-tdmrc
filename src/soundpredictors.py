@@ -16,6 +16,7 @@ def NEXT(value):
 def PREV(value):
     return value-1
 
+
 # compression function
 def compression(stream, predictor):
     initialStreamLength = 16 * len(stream)
@@ -61,13 +62,8 @@ def chunckCompression(stream, predictor, numberOfChunks):
     compressionRatio = 1.0 * totalSize / initialStreamLength
     return [initialStreamLength, totalSize, initialStreamLength - totalSize, compressionRatio]
 
-
-def test():
-    print("")
-    print("This is a test for sound predictors")
-    print("```````````````````````````````````")
-
-    wavFile = wave.open(constants.RAW_PATH + "test.wav")
+def run_singleTest(file):
+    wavFile = wave.open(constants.RAW_PATH + file)
     numberOfFrames = wavFile.getnframes()
     actualFrames = wavFile.readframes(numberOfFrames)
     sampleWidth = wavFile.getsampwidth() # 2 for our case
@@ -92,7 +88,7 @@ def test():
     print(table.table)
 
 
-    numberOfChunksArray = [2, 3, 5, 10, 20, 50]
+    numberOfChunksArray = [2, 3, 5, 10, 20, 50, 100, 200, 500]
     print("")
     print("Chunk split")
     for numberOfChunks in numberOfChunksArray:
@@ -108,3 +104,12 @@ def test():
         table = AsciiTable(results2)
         print(table.table)
         
+def test():
+    print("")
+    print("This is a test for sound predictors")
+    print("```````````````````````````````````")
+
+    testFiles = ['test.wav']
+    for testFile in testFiles:
+        print("Testing: " + testFile)
+        run_singleTest(testFile)

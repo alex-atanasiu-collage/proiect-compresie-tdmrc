@@ -6,7 +6,6 @@ import wave # we use wave to open wav files for test
 import struct
 import constants
 
-
 # PREDICTORS
 def SAME(value):
     return value
@@ -43,7 +42,25 @@ def compression(stream, predictor):
     compressionRatio = 1.0 * finalStreamLength / initialStreamLength
     #print("Compression ration is " + str(compressionRatio))
 
-    return [initialStreamLength, finalStreamLength, initialStreamLength - finalStreamLength, compressionRatio]
+    return [initialStreamLength, finalStreamLength, initialStreamLength - finalStreamLength, compressionRatio, maxBitsNeeded]
+
+def chunckCompression(stream, predictor, numberOfChunks):
+    initialStreamLength = 16 * len(stream)
+    
+    chunkSize = int(len(stream) / numberOfChunks)
+
+    totalSize = 0
+    for i in range(numberOfChunks):
+        start = i * chunkSize
+        finish = min((i + 1) * chunkSize - 1, len(stream))
+        # TODO compress subchunks in order to get better compression
+        chunkCompression = compression(stream[start:finish], predictor)
+        totalSize += chunkCompression[1]
+
+
+    compressionRatio = 1.0 * totalSize / initialStreamLength
+    return [initialStreamLength, totalSize, initialStreamLength - totalSize, compressionRatio]
+
 
 def test():
     print("")
@@ -63,8 +80,8 @@ def test():
     lengthsArray = [10, 25, 100, 1000, 5000, numberOfFrames]
     predictorsArray = [SAME, NEXT, PREV]
 
-
-    results = [['Initial number of bits', 'Final number of bits', 'Removed bits', 'Compression ratio', 'Predictor']]
+    # single compression
+    results = [['Initial number of bits', 'Final number of bits', 'Removed bits', 'Compression ratio',  'Bits needed for residue (< 16)', 'Predictor']]
     for length in lengthsArray:
         for predictor in predictorsArray:
             result = compression(actualSampleArray[:length], predictor)
@@ -73,3 +90,21 @@ def test():
 
     table = AsciiTable(results)
     print(table.table)
+
+
+    numberOfChunksArray = [2, 3, 5, 10, 20, 50]
+    print("")
+    print("Chunk split")
+    for numberOfChunks in numberOfChunksArray:
+        print(str(numberOfChunks) + " chunks")
+        print("`````````")
+        lengthsArray2 = [1000, 5000, 10000, 20000, numberOfFrames]
+        results2 =  [['Initial number of bits', 'Final number of bits', 'Removed bits', 'Compression ratio', 'Predictor']]    
+        for length in lengthsArray2:
+            for predictor in predictorsArray:
+                result = chunckCompression(actualSampleArray[:length], predictor, numberOfChunks)
+                result.append(predictor)
+                results2.append(result)
+        table = AsciiTable(results2)
+        print(table.table)
+        

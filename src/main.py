@@ -9,7 +9,6 @@ if __name__ == "__main__":
     print(" * Damian Petrisor Alin")
     print(" * Panaitescu Cristian")
 
-
     modules = [soundpredictors]
     
     # TODO run test from each module

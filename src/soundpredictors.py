@@ -1,19 +1,49 @@
 # This module uses different predictors to check out sound signals from a raw input
 
+from terminaltables import AsciiTable
+
 import wave # we use wave to open wav files for test
 import struct
 import constants
 
+
+# PREDICTORS
 def SAME(value):
     return value
 
-def compression(stream, predictor = None):
-    print("Initial stream length is " + str(2 * len(stream)) + " bytes")
+def NEXT(value):
+    return value+1
 
-    if(predictor == None):
-        print("Final stream length is " + str(2 * len(stream)) + " bytes with no predictor")
-        return
+def PREV(value):
+    return value-1
 
+# compression function
+def compression(stream, predictor):
+    initialStreamLength = 16 * len(stream)
+
+    #print("Initial stream length is " + str(initialStreamLength) + " bits")
+
+    compressedArray = []
+    maxBitsNeeded = 0
+
+    for i in range(0, len(stream) - 1):
+        currentValue = stream[i]
+        actualNextValue = stream[i+1]
+        predictedValue = predictor(currentValue)
+
+        residue = predictedValue - actualNextValue
+        compressedArray.append(residue)
+
+        actualBitsNeeded = int.bit_length(residue) + 1 # + 1 sign bit
+        if(maxBitsNeeded < actualBitsNeeded):
+            maxBitsNeeded = actualBitsNeeded
+
+    finalStreamLength = 16 + (len(stream) - 1) * maxBitsNeeded
+    #print("Final stream length is " + str(finalStreamLength) + " bits with no predictor")
+    compressionRatio = 1.0 * finalStreamLength / initialStreamLength
+    #print("Compression ration is " + str(compressionRatio))
+
+    return [initialStreamLength, finalStreamLength, initialStreamLength - finalStreamLength, compressionRatio]
 
 def test():
     print("")
@@ -28,11 +58,18 @@ def test():
     
     print("Sample array has: " + str(len(actualSampleArray)) + " samples")
 
-    wavFile.close();
+    wavFile.close()
 
     lengthsArray = [10, 25, 100, 1000, 5000, numberOfFrames]
-    predictorsArray = [None,SAME]
+    predictorsArray = [SAME, NEXT, PREV]
 
+
+    results = [['Initial number of bits', 'Final number of bits', 'Removed bits', 'Compression ratio', 'Predictor']]
     for length in lengthsArray:
         for predictor in predictorsArray:
-            compression(actualSampleArray[:length], predictor)
+            result = compression(actualSampleArray[:length], predictor)
+            result.append(predictor)
+            results.append(result)
+
+    table = AsciiTable(results)
+    print(table.table)

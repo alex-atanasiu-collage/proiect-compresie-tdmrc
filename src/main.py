@@ -1,4 +1,5 @@
 import soundpredictors
+import textpredictors
 
 if __name__ == "__main__":
     # TODO write main code for module
@@ -9,8 +10,8 @@ if __name__ == "__main__":
     print(" * Damian Petrisor Alin")
     print(" * Panaitescu Cristian")
 
-    modules = [soundpredictors]
-    
+    modules = [soundpredictors, textpredictors]
+
     # TODO run test from each module
     for module in modules:
         module.test()

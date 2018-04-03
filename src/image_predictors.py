@@ -32,7 +32,7 @@ def _W(i, j, image):
 def _NE(i, j, image):
 
     (height, width) = image.shape
-    if j < width - 1:
+    if j < width - 1 and i > 0:
        return image[i-1, j+1]
     else:
        return None

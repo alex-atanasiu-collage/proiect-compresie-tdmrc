@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 from image_predictors import *
+import huffman as huff
+import ast
 
 images = ["../raw/light.bmp", "../raw/marbles.bmp"]
 INFINITE = 999999
@@ -17,7 +19,7 @@ def get_residuum(image, i, j):
     for predictor in PREDICTORS:
         pvalue = predict_value(predictor, i, j, image)
         if pvalue:
-            residuum = pvalue - image[i, j]
+            residuum = int(pvalue) - int(image[i, j])
             if min_res > abs(residuum):
                 min_res = residuum
 
@@ -38,6 +40,47 @@ def predict_values(image):
                 residuums.append(residuum)
 
     return residuums
+
+def get_huffman(image):
+
+    residuums = predict_values(image)
+    num_appearances = {}
+    for residuum in residuums:
+        if residuum not in num_appearances:
+            num_appearances[residuum] = 1
+        else:
+            num_appearances[residuum] += 1
+
+    huff_coll = []
+    for entry in num_appearances:
+        huff_coll += [(entry, num_appearances[entry])]
+
+    huff_coll = huff.codebook(huff_coll)
+    return (huff_coll, residuums)
+
+def save_text_huffman(image, filename):
+
+    stream = ""
+    (codings, residuums) = get_huffman(image)
+
+    for residuum in residuums:
+        stream += codings[residuum]
+
+    stream_file = open(filename, "w")
+    dict_file = open(filename + ".dict", "w")
+    stream_file.write(stream)
+    dict_file.write(str(codings))
+    stream_file.close()
+    dict_file.close()
+
+def load_text_huffman(filename):
+    stream_file = open(filename, "r")
+    dict_file = open(filename + ".dict", "r")
+    stream = stream_file.read()
+    codings = ast.literal_eval(dict_file.read())
+    stream_file.close()
+    dict_file.close()
+    return (codings, stream)
 
 def compress_statistics(image):
 
@@ -65,4 +108,3 @@ def compress_statistics(image):
 
 if __name__ == "__main__":
     image = get_image_info(images[1])
-    compress_statistics(image)

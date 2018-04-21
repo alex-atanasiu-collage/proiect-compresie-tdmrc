@@ -2,10 +2,11 @@ import cv2 as cv
 import numpy as np
 from image_predictors import *
 import huffman as huff
-import ast
+import ast, os
 
 images = ["../raw/light.bmp", "../raw/marbles.bmp"]
 INFINITE = 999999
+EXECUTABLE = "./byte_stream"
 
 def get_image_info(file_path):
 
@@ -68,19 +69,54 @@ def save_text_huffman(image, filename):
 
     stream_file = open(filename, "w")
     dict_file = open(filename + ".dict", "w")
+
     stream_file.write(stream)
     dict_file.write(str(codings))
+
     stream_file.close()
     dict_file.close()
 
+    os.system(EXECUTABLE + " u " + filename + " "  + filename + ".arch")
+    os.system("rm -f " + filename)
+
 def load_text_huffman(filename):
-    stream_file = open(filename, "r")
-    dict_file = open(filename + ".dict", "r")
+
+    if ".arch" not in filename:
+        print "Not a valid format... We need .arch files"
+        return None
+
+    tmp_file = filename.split(".arch")[0]
+    os.system(EXECUTABLE + " v " + filename + " " + tmp_file)
+ 
+    stream_file = open(tmp_file, "r")
+    dict_file = open(tmp_file + ".dict", "r")
+
     stream = stream_file.read()
     codings = ast.literal_eval(dict_file.read())
+
     stream_file.close()
     dict_file.close()
+
     return (codings, stream)
+
+def decode_residuums(filename):
+
+    (codings, stream) = load_text_huffman(filename)
+    decodings = {}
+    residuums = []
+    for (key, value) in codings.iteritems():
+        decodings[value] = key
+
+    """TODO"""
+    """ implement more eficient decoding  """
+    while stream:
+        for key in decodings:
+            if stream.startswith(key):
+                residuums += [decodings[key]]
+                stream = stream[len(key):]
+                break  
+
+    return residuums
 
 def compress_statistics(image):
 
@@ -108,3 +144,4 @@ def compress_statistics(image):
 
 if __name__ == "__main__":
     image = get_image_info(images[1])
+    decode_residuums("marbles.temp.arch")

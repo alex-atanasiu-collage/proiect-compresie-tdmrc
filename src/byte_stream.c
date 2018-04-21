@@ -116,7 +116,8 @@ void store_tmp_uncompressed(const char *storage_file, const char *tmp_file) {
     }
 
     fwrite(stream, sizeof(uint8_t), stream_size, g);
-
+    free(stream);
+    free(c_stream);
     fclose(f);
     fclose(g);
 }

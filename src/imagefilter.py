@@ -107,14 +107,15 @@ def decode_residuums(filename):
     for (key, value) in codings.iteritems():
         decodings[value] = key
 
-    """TODO"""
-    """ implement more eficient decoding  """
-    while stream:
-        for key in decodings:
-            if stream.startswith(key):
-                residuums += [decodings[key]]
-                stream = stream[len(key):]
-                break  
+    key = ""
+    index = 0
+    i = 0
+    while index < len(stream):
+        key += stream[index]
+        index += 1
+        if key in decodings:
+            residuums += [decodings[key]]
+            key = ""
 
     return residuums
 
@@ -144,4 +145,4 @@ def compress_statistics(image):
 
 if __name__ == "__main__":
     image = get_image_info(images[1])
-    decode_residuums("marbles.temp.arch")
+    res2 = decode_residuums("marbles.temp.arch")

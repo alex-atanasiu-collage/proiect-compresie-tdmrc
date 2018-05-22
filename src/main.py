@@ -11,4 +11,4 @@ if __name__ == "__main__":
     print(" * Panaitescu Cristian")
     print("``````````````````````````````````````````````")
 
-    textpredictors.test();
+    soundpredictors.test();

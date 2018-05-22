@@ -9,9 +9,6 @@ if __name__ == "__main__":
     print(" * Baloi Bogdan-Cristian")
     print(" * Damian Petrisor Alin")
     print(" * Panaitescu Cristian")
+    print("``````````````````````````````````````````````")
 
-    modules = [soundpredictors, textpredictors]
-
-    # TODO run test from each module
-    for module in modules:
-        module.test()
+    textpredictors.test();

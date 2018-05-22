@@ -125,7 +125,7 @@ void store_tmp_uncompressed(const char *storage_file, const char *tmp_file) {
 int main(int argc, char **argv)
 {
     if (argc < 4) {
-        printf("Use the focking program as i want\n");
+        printf("HELP: argv[0] u/v <infilename>\n");
         return -1;
     }
 
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
     } else if (strcmp(argv[1], "v") == 0) {
         store_tmp_uncompressed(argv[2], argv[3]);
     } else {
-        printf("We only have 2 focking possible operations\n");
+        printf("We only have 2 possible operations\n");
     }
 
 

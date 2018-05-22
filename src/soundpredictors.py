@@ -113,7 +113,7 @@ def test():
     print("This is a test for sound predictors")
     print("```````````````````````````````````")
 
-    testFile = 'test.wav'
+    testFile = 'test2.wav'
     print("Testing: " + testFile)
 
     saveTextHuffman(testFile, "test.wav.temp", "NEXT")
@@ -127,9 +127,10 @@ def saveTextHuffman(inFilename, filename, predictor):
     numberOfChannels = wavFile.getnchannels()
     numberOfFrames = wavFile.getnframes()
     actualFrames = wavFile.readframes(numberOfFrames)
-    sampleWidth = wavFile.getsampwidth() # 2 for our case
-    sampleRate = wavFile.getframerate()
+    sampleWidth = wavFile.getsampwidth() 
     actualSampleArray = struct.unpack('h'*numberOfFrames,actualFrames)
+
+    
 
     stream = ""
     (codings, residues) = getHuffman(actualSampleArray, predictor)
@@ -207,8 +208,8 @@ def restoreFileData(filename):
         lastValue = decodedValue
         fileData.append(decodedValue)
     
-    wavef = wave.open(constants.RAW_PATH + "test_restored.wav",'w')
-    wavef.setnchannels(numberOfChannels) # mono
+    wavef = wave.open(constants.RAW_PATH + "test2_restored.wav",'w')
+    wavef.setnchannels(numberOfChannels)
     wavef.setsampwidth(sampleWidth) 
     wavef.setframerate(sampleRate)
 
